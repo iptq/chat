@@ -1,0 +1,5 @@
+/target
+**/*.rs.bk
+
+/proto/src/proto/*.rs
+!/proto/src/proto/mod.rs

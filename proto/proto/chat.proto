@@ -1,0 +1,137 @@
+syntax = "proto3";
+
+package chat;
+
+import "util.proto";
+
+// Generic error response.
+message ErrorResponse {
+    enum Code {
+        // A server-specific custom error (refer to provided message).
+        CUSTOM = 0;
+    }
+
+    // The error code associated with this error response.
+    Code code = 1;
+
+    // An optional message.
+    string message = 2;
+}
+
+message RegisterNickCommand {
+    // The name to be registered.
+    string name = 1;
+
+    // The public key to use for registration.
+    string key = 2;
+}
+
+message RegisterNickResponse {
+    oneof _0 {
+        // Registration was denied.
+        ErrorResponse denied = 1;
+
+        // Registration was successful, and you were logged in.
+        WelcomeResponse success = 2;
+    }
+}
+
+message LoginChallengeCommand {
+    // The key to use for login.
+    string key = 1;
+}
+
+message LoginChallengeResponse {
+    oneof _0 {
+        // The server may opt to deny the challenge.
+        ErrorResponse denied = 1;
+
+        // The challenge (encrypted nonce).
+        bytes challenge = 2;
+    }
+}
+
+message LoginChallengeAttemptCommand {
+    // The attempted solution to the challenge (decrypted nonce).
+    bytes attempt = 1;
+}
+
+message LoginChallengeAttemptResponse {
+    oneof _0 {
+        // The attempted login was denied.
+        ErrorResponse denied = 1;
+
+        // Login was successful.
+        WelcomeResponse success = 2;
+    }
+}
+
+message WelcomeResponse {
+    message UnreadChannel {
+        // Snowflake ID of the channel.
+        fixed64 id = 1;
+
+        // Name of the channel.
+        string name = 2;
+
+        // Number of missed messages.
+        uint32 missed_messages = 3;
+    }
+
+    // Your username.
+    string name = 1;
+
+    // The channels you've missed.
+    repeated UnreadChannel unread_channels = 2;
+}
+
+message SendMessageCommand {
+    // The contents of the message.
+    bytes contents = 1;
+}
+
+message ServerNewMessage {
+    // The sender of the message.
+    UserSimple user = 1;
+
+    // The contents of the message.
+    bytes contents = 2;
+}
+
+message RequestHistoryCommand {
+    // The id of the channel to request from.
+    fixed64 id = 1;
+
+    // The timestamp before which to search.
+    fixed64 timestamp = 2;
+
+    // The number of messages to retrieve (this may be limited by the server).
+    uint32 amount = 3;
+}
+
+message ClientMessage {
+    oneof _0 {
+        // Register a nickname.
+        RegisterNickCommand register_nick = 1;
+
+        // Request a login challenge.
+        LoginChallengeCommand login = 2;
+
+        // Attempt to login.
+        LoginChallengeAttemptCommand login_attempt = 3;
+
+        // Send message to channel.
+        SendMessageCommand send_message = 4;
+
+        // Request channel history.
+        RequestHistoryCommand request_history = 5;
+    }
+}
+
+message ServerMessage {
+    oneof _0 {
+        RegisterNickResponse register_nick = 1;
+        LoginChallengeResponse login = 2;
+        LoginChallengeAttemptResponse login_attempt = 3;
+    }
+}

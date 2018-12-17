@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package chat;
+
+message UserSimple {
+    // Snowflake ID.
+    fixed64 id = 1;
+
+    // Username.
+    string username = 2;
+}
