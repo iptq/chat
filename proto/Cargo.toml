@@ -2,9 +2,13 @@
 name = "proto"
 version = "0.1.0"
 authors = ["Michael Zhang <failed.down@gmail.com>"]
+build = "build.rs"
 
 [build-dependencies]
 protoc-rust = "2.0"
 
 [dependencies]
+bytes = "0.4"
+failure = "0.1"
 protobuf = { version = "~2.0", features = ["with-bytes"] }
+tokio-io = "0.1"
